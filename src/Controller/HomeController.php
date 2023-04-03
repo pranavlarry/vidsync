@@ -2,17 +2,81 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use Google_Client;
+use Google\Service\YouTube as Google_Service_YouTube;
+use Google_Service_Exception;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class HomeController extends AbstractController
 {
     #[Route('/home', name: 'app_home')]
-    public function index(): Response
-    {
+    public function index(Request $request)
+    { $session = $request->getSession();
+        $access_token = $session->get('access_token');
+        $refresh_token = $session->get('refresh_token');
+
+        if (!$access_token) {
+            return $this->redirectToRoute('login');
+        }
+      
+
+        $client = new Google_Client();
+        $client->setAccessToken($access_token);
+
+        if ($client->isAccessTokenExpired()) {
+            $client->fetchAccessTokenWithRefreshToken($refresh_token);
+            $new_access_token = $client->getAccessToken();
+            $session->set('access_token', $new_access_token);
+            $access_token = $new_access_token;
+        }
+
+        $keyword = $request->query->get('keyword');
+        $youtube = new Google_Service_YouTube($client);
+
+        $channelsResponse = $youtube->channels->listChannels('id,contentDetails', [
+            'mine' => true,
+        ]);
+        $channelId = $channelsResponse[0]['id'];
+
+        $searchResponse = $youtube->search->listSearch('id,snippet', [
+            'q' => $keyword."" ,
+            'order' => 'date',
+            'channelId' => $channelId,
+            'maxResults' => 500,
+        ]);
+
+        $videoIds = array();
+        foreach ($searchResponse['items'] as $searchResult) {
+            $videoIds[] = $searchResult['id']['videoId'];
+        }
+
+        if (empty($videoIds)) {
+            return $this->render('landing_page/landing.html.twig', [
+                'videos' => [],
+                'keyword' => $keyword,
+                'noResults' => true,
+            ]);
+        }
+
+        $videosResponse = $youtube->videos->listVideos('snippet', [
+            'id' => implode(',', $videoIds),
+        ]);
+
+        $videos = array();
+        foreach ($videosResponse as $video) {
+            $videos[] = array(
+                'title' => $video->snippet->title,
+                'thumbnail' => $video->snippet->thumbnails->default->url,
+                'videoId' => $video->id,
+            );
+        }
         return $this->render('home/index.html.twig', [
-            'controller_name' => 'HomeController',
+            'videos' => $videos,
+            'keyword' => $keyword,
+            'noResults' => false,
         ]);
     }
 }

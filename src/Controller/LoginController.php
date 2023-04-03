@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use Google_Client;
-use Google_Service_YouTube;
+use Google\Service\YouTube as Google_Service_YouTube;
 use Google_Service_Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
