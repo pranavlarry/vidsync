@@ -54,7 +54,7 @@ class HomeController extends AbstractController
         }
 
         if (empty($videoIds)) {
-            return $this->render('landing_page/landing.html.twig', [
+            return $this->render('home/index.html.twig', [
                 'videos' => [],
                 'keyword' => $keyword,
                 'noResults' => true,
