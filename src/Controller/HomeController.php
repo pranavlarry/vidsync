@@ -32,17 +32,14 @@ class HomeController extends AbstractController
             $session->set('access_token', $new_access_token);
             $access_token = $new_access_token;
         }
-
-        $keyword = $request->query->get('keyword');
         $youtube = new Google_Service_YouTube($client);
 
         $channelsResponse = $youtube->channels->listChannels('id,contentDetails', [
             'mine' => true,
         ]);
         $channelId = $channelsResponse[0]['id'];
-
+        
         $searchResponse = $youtube->search->listSearch('id,snippet', [
-            'q' => $keyword."" ,
             'order' => 'date',
             'channelId' => $channelId,
             'maxResults' => 500,
@@ -56,7 +53,6 @@ class HomeController extends AbstractController
         if (empty($videoIds)) {
             return $this->render('home/index.html.twig', [
                 'videos' => [],
-                'keyword' => $keyword,
                 'noResults' => true,
             ]);
         }
@@ -73,10 +69,20 @@ class HomeController extends AbstractController
                 'videoId' => $video->id,
             );
         }
+        
+        $keyword = $request->query->get('keyword');
+        if ($keyword) {
+            $videos = array_filter($videos, function($video) use ($keyword) {
+                $title = $video['title'];
+                return (strtolower($title[0]) == strtolower($keyword[0])) && 
+                str_contains(strtolower($title), strtolower($keyword));
+            });
+        }
+        
         return $this->render('home/index.html.twig', [
             'videos' => $videos,
             'keyword' => $keyword,
-            'noResults' => false,
+            'noResults' => empty($videos),
         ]);
     }
 }
