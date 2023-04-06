@@ -4,11 +4,9 @@ namespace App\Controller;
 
 use Google_Client;
 use Google\Service\YouTube as Google_Service_YouTube;
-use Google_Service_Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class HomeController extends AbstractController
 {
