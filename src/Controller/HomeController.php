@@ -56,16 +56,24 @@ class HomeController extends AbstractController
             ]);
         }
 
-        $videosResponse = $youtube->videos->listVideos('snippet', [
+        $videosResponse = $youtube->videos->listVideos('snippet,contentDetails', [
             'id' => implode(',', $videoIds),
         ]);
-
+        
         $videos = array();
         foreach ($videosResponse as $video) {
+            $durationString = $video->contentDetails->duration;
+            $duration = new \DateInterval($durationString);
+            $durationSeconds = $duration->h * 3600 + $duration->i * 60 + $duration->s;
+            
+        
+            $durationReadable = gmdate('H:i:s', $durationSeconds);
             $videos[] = array(
                 'title' => $video->snippet->title,
                 'thumbnail' => $video->snippet->thumbnails->default->url,
+                'duration' => $durationReadable,
                 'videoId' => $video->id,
+                'publishedAt' => $video->snippet->publishedAt,
             );
         }
 

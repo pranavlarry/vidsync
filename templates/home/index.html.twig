@@ -20,6 +20,9 @@
 					<input type="radio" name="selectedVideo" value="{{ video.videoId }}" />
 					<img src="{{ video.thumbnail }}" alt="{{ video.title }}"/>
 					<h6>{{ video.title }}</h6>
+					<p>Published Date: {{ video.publishedAt|date('Y-m-d') }}</p>
+					<p>ID: {{ video.videoId }}</p>
+					<p>Duration: {{video.duration}}</p>
 				</label>
 			</div>
 			<a href="{{ path('video_detail', {'videoId': video.videoId}) }}" class="next-btn" data-video-id="{{ video.videoId }}">Next</a>
