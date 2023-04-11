@@ -12,14 +12,15 @@ class HomeController extends AbstractController
 {
     #[Route('/home', name: 'app_home')]
     public function index(Request $request)
-    { $session = $request->getSession();
+    {
+        $session = $request->getSession();
         $access_token = $session->get('access_token');
         $refresh_token = $session->get('refresh_token');
 
         if (!$access_token) {
             return $this->redirectToRoute('login');
         }
-      
+
 
         $client = new Google_Client();
         $client->setAccessToken($access_token);
@@ -36,7 +37,7 @@ class HomeController extends AbstractController
             'mine' => true,
         ]);
         $channelId = $channelsResponse[0]['id'];
-        
+
         $searchResponse = $youtube->search->listSearch('id,snippet', [
             'order' => 'date',
             'channelId' => $channelId,
@@ -67,20 +68,58 @@ class HomeController extends AbstractController
                 'videoId' => $video->id,
             );
         }
-        
+
         $keyword = $request->query->get('keyword');
         if ($keyword) {
-            $videos = array_filter($videos, function($video) use ($keyword) {
+            $videos = array_filter($videos, function ($video) use ($keyword) {
                 $title = $video['title'];
-                return (strtolower($title[0]) == strtolower($keyword[0])) && 
-                str_contains(strtolower($title), strtolower($keyword));
+                return (strtolower($title[0]) == strtolower($keyword[0])) &&
+                    str_contains(strtolower($title), strtolower($keyword));
             });
         }
-        
+
         return $this->render('home/index.html.twig', [
             'videos' => $videos,
             'keyword' => $keyword,
             'noResults' => empty($videos),
+        ]);
+    }
+    #[Route('/videos/{videoId}', name: 'video_detail')]
+    public function videoDetail(Request $request, string $videoId)
+    {
+        $session = $request->getSession();
+        $access_token = $session->get('access_token');
+        $refresh_token = $session->get('refresh_token');
+
+        if (!$access_token) {
+            return $this->redirectToRoute('login');
+        }
+
+        $client = new Google_Client();
+        $client->setAccessToken($access_token);
+
+        if ($client->isAccessTokenExpired()) {
+            $client->fetchAccessTokenWithRefreshToken($refresh_token);
+            $new_access_token = $client->getAccessToken();
+            $session->set('access_token', $new_access_token);
+            $access_token = $new_access_token;
+        }
+
+        $youtube = new Google_Service_YouTube($client);
+
+        $videosResponse = $youtube->videos->listVideos('snippet', [
+            'id' => $videoId,
+        ]);
+
+        $video = [
+            'title' => $videosResponse[0]->snippet->title,
+            'description' => $videosResponse[0]->snippet->description,
+            'thumbnail' => $videosResponse[0]->snippet->thumbnails->high->url,
+            'videoId' => $videosResponse[0]->id,
+        ];
+
+        return $this->render('home/next.html.twig', [
+            'video' => $video,
         ]);
     }
 }

@@ -20,3 +20,8 @@ home:
   path: /home
   controller: App\Controller\HomeController::index
   methods: GET
+
+video_detail:
+    path: '/videos/{videoId}'
+    controller: App\Controller\HomeController::videoDetail
+
