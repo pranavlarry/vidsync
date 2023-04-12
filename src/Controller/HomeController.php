@@ -64,8 +64,10 @@ class HomeController extends AbstractController
                 'publishedAt' => $video->snippet->publishedAt,
             );
         }
-
+        
         $keyword = $request->query->get('keyword');
+        $limit = $request->query->get('limit', 5);
+
         if ($keyword) {
             $videos = array_filter($videos, function ($video) use ($keyword) {
                 $title = $video['title'];
@@ -78,6 +80,7 @@ class HomeController extends AbstractController
             'videos' => $videos,
             'keyword' => $keyword,
             'noResults' => empty($videos),
+            'limit' => $limit,
         ]);
     }
     #[Route('/videos/{videoId}', name: 'video_detail')]
