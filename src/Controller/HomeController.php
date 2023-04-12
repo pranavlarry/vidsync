@@ -95,7 +95,7 @@ class HomeController extends AbstractController
             'videos' => $videos,
             'keyword' => $keyword,
             'noResults' => empty($videos),
-            'limit' => $limit,
+            
         ]);
     }
     #[Route('/videos/{videoId}', name: 'video_detail')]
