@@ -15,22 +15,10 @@ class HomeController extends AbstractController
     {
         $session = $request->getSession();
         $access_token = $session->get('access_token');
-        $refresh_token = $session->get('refresh_token');
-
-        if (!$access_token) {
-            return $this->redirectToRoute('login');
-        }
-
 
         $client = new Google_Client();
         $client->setAccessToken($access_token);
 
-        if ($client->isAccessTokenExpired()) {
-            $client->fetchAccessTokenWithRefreshToken($refresh_token);
-            $new_access_token = $client->getAccessToken();
-            $session->set('access_token', $new_access_token);
-            $access_token = $new_access_token;
-        }
         $youtube = new Google_Service_YouTube($client);
 
         $channelsResponse = $youtube->channels->listChannels('id,contentDetails', [
@@ -59,14 +47,14 @@ class HomeController extends AbstractController
         $videosResponse = $youtube->videos->listVideos('snippet,contentDetails', [
             'id' => implode(',', $videoIds),
         ]);
-        
+
         $videos = array();
         foreach ($videosResponse as $video) {
             $durationString = $video->contentDetails->duration;
             $duration = new \DateInterval($durationString);
             $durationSeconds = $duration->h * 3600 + $duration->i * 60 + $duration->s;
-            
-        
+
+
             $durationReadable = gmdate('H:i:s', $durationSeconds);
             $videos[] = array(
                 'title' => $video->snippet->title,
@@ -95,23 +83,15 @@ class HomeController extends AbstractController
     #[Route('/videos/{videoId}', name: 'video_detail')]
     public function videoDetail(Request $request, string $videoId)
     {
+
         $session = $request->getSession();
         $access_token = $session->get('access_token');
-        $refresh_token = $session->get('refresh_token');
-
         if (!$access_token) {
             return $this->redirectToRoute('login');
         }
 
         $client = new Google_Client();
         $client->setAccessToken($access_token);
-
-        if ($client->isAccessTokenExpired()) {
-            $client->fetchAccessTokenWithRefreshToken($refresh_token);
-            $new_access_token = $client->getAccessToken();
-            $session->set('access_token', $new_access_token);
-            $access_token = $new_access_token;
-        }
 
         $youtube = new Google_Service_YouTube($client);
 
@@ -126,8 +106,11 @@ class HomeController extends AbstractController
             'videoId' => $videosResponse[0]->id,
         ];
 
+        $embedCode = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' . $video['videoId'] . '" frameborder="0" allowfullscreen></iframe>';
+
         return $this->render('home/next.html.twig', [
             'video' => $video,
+            'embedCode' => $embedCode,
         ]);
     }
 }
