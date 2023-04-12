@@ -15,22 +15,10 @@ class HomeController extends AbstractController
     {
         $session = $request->getSession();
         $access_token = $session->get('access_token');
-        $refresh_token = $session->get('refresh_token');
-
-        if (!$access_token) {
-            return $this->redirectToRoute('login');
-        }
-
 
         $client = new Google_Client();
         $client->setAccessToken($access_token);
 
-        if ($client->isAccessTokenExpired()) {
-            $client->fetchAccessTokenWithRefreshToken($refresh_token);
-            $new_access_token = $client->getAccessToken();
-            $session->set('access_token', $new_access_token);
-            $access_token = $new_access_token;
-        }
         $youtube = new Google_Service_YouTube($client);
 
         $channelsResponse = $youtube->channels->listChannels('id,contentDetails', [
@@ -60,28 +48,26 @@ class HomeController extends AbstractController
             'id' => implode(',', $videoIds),
         ]);
 
-
         $videos = array();
         foreach ($videosResponse as $video) {
-            // Get the duration of the video in seconds
             $durationString = $video->contentDetails->duration;
             $duration = new \DateInterval($durationString);
-            $durationSeconds = $duration->h * 3600 + $duration->i * 60 + $duration->s;
-            
-            // Convert the duration to a readable format
+            $durationSeconds = $duration->h  * 3600 + $duration->i * 60 + $duration->s;
+
+
             $durationReadable = gmdate('H:i:s', $durationSeconds);
-            
             $videos[] = array(
                 'title' => $video->snippet->title,
                 'thumbnail' => $video->snippet->thumbnails->default->url,
-                'videoId' => $video->id,
                 'duration' => $durationReadable,
+                'videoId' => $video->id,
                 'publishedAt' => $video->snippet->publishedAt,
             );
         }
-
+        
         $keyword = $request->query->get('keyword');
         $limit = $request->query->get('limit', 5);
+
         if ($keyword) {
             $videos = array_filter($videos, function ($video) use ($keyword) {
                 $title = $video['title'];
@@ -90,21 +76,19 @@ class HomeController extends AbstractController
             });
         }
 
-
         return $this->render('home/index.html.twig', [
             'videos' => $videos,
             'keyword' => $keyword,
             'noResults' => empty($videos),
-            
+            'limit' => $limit,
         ]);
     }
     #[Route('/videos/{videoId}', name: 'video_detail')]
     public function videoDetail(Request $request, string $videoId)
     {
+
         $session = $request->getSession();
         $access_token = $session->get('access_token');
-        $refresh_token = $session->get('refresh_token');
-
         if (!$access_token) {
             return $this->redirectToRoute('login');
         }
@@ -112,20 +96,11 @@ class HomeController extends AbstractController
         $client = new Google_Client();
         $client->setAccessToken($access_token);
 
-        if ($client->isAccessTokenExpired()) {
-            $client->fetchAccessTokenWithRefreshToken($refresh_token);
-            $new_access_token = $client->getAccessToken();
-            $session->set('access_token', $new_access_token);
-            $access_token = $new_access_token;
-        }
-
         $youtube = new Google_Service_YouTube($client);
 
-        $videosResponse = $youtube->videos->listVideos('snippet,contentDetails', [
+        $videosResponse = $youtube->videos->listVideos('snippet', [
             'id' => $videoId,
         ]);
-
-
 
         $video = [
             'title' => $videosResponse[0]->snippet->title,
@@ -134,8 +109,11 @@ class HomeController extends AbstractController
             'videoId' => $videosResponse[0]->id,
         ];
 
+        $embedCode = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' . $video['videoId'] . '" frameborder="0" allowfullscreen></iframe>';
+
         return $this->render('home/next.html.twig', [
             'video' => $video,
+            'embedCode' => $embedCode,
         ]);
     }
 }
