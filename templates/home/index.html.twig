@@ -1,29 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Videos
-{% endblock %}
+{% block title %}Videos{% endblock %}
 
 {% block body %}
-	<form method="get" action="{{ path('home') }}" class="mb-4 search">
-		<div class="flex justify-center items-center">
-			<input id="search-input" type="text" name="keyword" class="form-input py-2 px-4 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 block w-3/2 sm:text-sm border-gray-300 rounded-md" placeholder="Search..." value="{{keyword}}"/>
-		</div>
-	</form>
+  <form method="get" action="{{ path('home') }}" class="mb-4 search">
+    <div class="flex justify-center items-center">
+      <input id="search-input" type="text" name="keyword" class="form-input py-2 px-4 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 block w-3/2 sm:text-sm border-gray-300 rounded-md" placeholder="Search..." value="{{ keyword }}"/>
+      <select name="limit" class="ml-4 form-select py-2 px-4 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md">
+        <option value="5" {{ limit == 5 ? 'selected' : '' }}>5 per page</option>
+        <option value="10" {{ limit == 10 ? 'selected' : '' }}>10 per page</option>
+        <option value="20" {{ limit == 20 ? 'selected' : '' }}>20 per page</option>
+      </select>
+      <button type="submit" class="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Apply</button>
+    </div>
+  </form>
 
-	{% if noResults %}
-		<p>No results found: "{{keyword}}"</p>
-
-	{% else %}
-		{% for video in videos %}
-			<div class="video">
-				<label>
-					<input type="radio" name="selectedVideo" value="{{ video.videoId }}" />
-					<img src="{{ video.thumbnail }}" alt="{{ video.title }}"/>
-					<h6>{{ video.title }}</h6>
-				</label>
-			</div>
-			<a href="{{ path('video_detail', {'videoId': video.videoId}) }}" class="next-btn" data-video-id="{{ video.videoId }}">Next</a>
-		{% endfor %}
-	{% endif %}
+  {% if noResults %}
+    <p>No results found: "{{ keyword }}"</p>
+  {% else %}
+    {% for key, video in videos %}
+      {% if loop.index <= limit %}
+        <div class="video">
+          <label>
+            <input type="radio" name="selectedVideo" value="{{ video.videoId }}" />
+            <img src="{{ video.thumbnail }}" alt="{{ video.title }}"/>
+            <h6>{{ video.title }}</h6>
+            <p>ID : {{ video.videoId }}</p>
+            <p>Duration : {{ video.duration }}</p>
+            <p>Date: {{ video.publishedAt|date('Y-m-d') }}</p>
+          </label>
+        </div>
+      {% endif %}
+    {% endfor %}
+    <button id="next-btn">Next</button>
+    <script>
+      const nextBtn = document.getElementById('next-btn');
+      nextBtn.addEventListener('click', () => {
+        const selectedVideoId = document.querySelector('input[name="selectedVideo"]:checked').value;
+        window.location.href = "{{ path('video_detail', {'videoId': 'VIDEO_ID'}) }}".replace('VIDEO_ID', selectedVideoId);
+      });
+    </script>
+  {% endif %}
 {% endblock %}
-

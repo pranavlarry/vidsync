@@ -56,20 +56,32 @@ class HomeController extends AbstractController
             ]);
         }
 
-        $videosResponse = $youtube->videos->listVideos('snippet', [
+        $videosResponse = $youtube->videos->listVideos('snippet,contentDetails', [
             'id' => implode(',', $videoIds),
         ]);
 
+
         $videos = array();
         foreach ($videosResponse as $video) {
+            // Get the duration of the video in seconds
+            $durationString = $video->contentDetails->duration;
+            $duration = new \DateInterval($durationString);
+            $durationSeconds = $duration->h * 3600 + $duration->i * 60 + $duration->s;
+            
+            // Convert the duration to a readable format
+            $durationReadable = gmdate('H:i:s', $durationSeconds);
+            
             $videos[] = array(
                 'title' => $video->snippet->title,
                 'thumbnail' => $video->snippet->thumbnails->default->url,
                 'videoId' => $video->id,
+                'duration' => $durationReadable,
+                'publishedAt' => $video->snippet->publishedAt,
             );
         }
 
         $keyword = $request->query->get('keyword');
+        $limit = $request->query->get('limit', 5);
         if ($keyword) {
             $videos = array_filter($videos, function ($video) use ($keyword) {
                 $title = $video['title'];
@@ -78,10 +90,12 @@ class HomeController extends AbstractController
             });
         }
 
+
         return $this->render('home/index.html.twig', [
             'videos' => $videos,
             'keyword' => $keyword,
             'noResults' => empty($videos),
+            'limit' => $limit,
         ]);
     }
     #[Route('/videos/{videoId}', name: 'video_detail')]
@@ -107,9 +121,11 @@ class HomeController extends AbstractController
 
         $youtube = new Google_Service_YouTube($client);
 
-        $videosResponse = $youtube->videos->listVideos('snippet', [
+        $videosResponse = $youtube->videos->listVideos('snippet,contentDetails', [
             'id' => $videoId,
         ]);
+
+
 
         $video = [
             'title' => $videosResponse[0]->snippet->title,

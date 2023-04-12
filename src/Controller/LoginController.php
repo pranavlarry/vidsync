@@ -18,6 +18,13 @@ class LoginController extends AbstractController
 
      public function login(Request $request)
      {
+         $session = $request->getSession();
+        $access_token = $session->get('access_token');
+
+        if ($access_token) {
+            return $this->redirectToRoute('home');
+        }
+
          // Render the login form
          return $this->render('first_login.html.twig');
      }
@@ -29,8 +36,8 @@ class LoginController extends AbstractController
     public function loginWithGoogle(Request $request)
     {
         $client = new Google_Client();
-        $client->setClientId('485562837483-5n90i4oj21edf60m0349qr1q6orkt0r8.apps.googleusercontent.com');
-        $client->setClientSecret('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');
+        $client->setClientId('364147634847-fo6idfvun9fp6usn9i2op76cnpnnm0o5.apps.googleusercontent.com');
+        $client->setClientSecret('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');
         $client->setRedirectUri($this->generateUrl('login_callback', [], UrlGeneratorInterface::ABSOLUTE_URL));
         $client->addScope(Google_Service_YouTube::YOUTUBE_READONLY);
         
@@ -46,8 +53,8 @@ class LoginController extends AbstractController
     {
         // Exchange the authorization code for an access token
         $client = new Google_Client();
-        $client->setClientId('485562837483-5n90i4oj21edf60m0349qr1q6orkt0r8.apps.googleusercontent.com');
-        $client->setClientSecret('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');
+        $client->setClientId('364147634847-fo6idfvun9fp6usn9i2op76cnpnnm0o5.apps.googleusercontent.com');
+        $client->setClientSecret('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');
         $client->setRedirectUri($this->generateUrl('login_callback', [], UrlGeneratorInterface::ABSOLUTE_URL));
         $client->addScope(Google_Service_YouTube::YOUTUBE_READONLY);
         
