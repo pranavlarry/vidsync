@@ -134,10 +134,10 @@ class HomeController extends AbstractController
                         fs: 0,
                         autoplay: 1,
                         loop: 1,
+                        playlist: "'. $video['videoId'] .'"
                       },
                       events: {
                         "onReady": onPlayerReady,
-                        "onStateChange": onPlayerStateChange
                       }
                     });
                   }
@@ -145,14 +145,6 @@ class HomeController extends AbstractController
                     event.target.playVideo();
                   }
                   var done = false;
-                  function onPlayerStateChange(event) {
-                    if (event.data == YT.PlayerState.PLAYING && !done) {
-                      if (event.data == YT.PlayerState.ENDED) {
-                        player.seekTo(0);
-                        player.playVideo();
-                      }
-                    }
-                  }
                 </script>';
 
         return $this->render('home/next.html.twig', [
