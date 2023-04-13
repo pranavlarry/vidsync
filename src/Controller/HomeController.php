@@ -110,10 +110,56 @@ class HomeController extends AbstractController
         ];
 
         $embedCode = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' . $video['videoId'] . '" frameborder="0" allowfullscreen></iframe>';
+        $script1 = '<div
+                <div id="player"></div>
+            
+                <script>
+                  
+                  var tag = document.createElement("script");
+            
+                  tag.src = "https://www.youtube.com/iframe_api";
+                  var firstScriptTag = document.getElementsByTagName("script")[0];
+                  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            
+                  var player;
+                  function onYouTubeIframeAPIReady() {
+                    player = new YT.Player("player", {
+                      height: "390",
+                      width: "640",
+                      videoId: "'. $video['videoId'] .'",
+                      
+                      playerVars: {
+                        "playsinline": 1,
+                        disablekb: 1,
+                        fs: 0,
+                        autoplay: 1,
+                        loop: 1,
+                      },
+                      events: {
+                        "onReady": onPlayerReady,
+                        "onStateChange": onPlayerStateChange
+                      }
+                    });
+                  }
+                  function onPlayerReady(event) {
+                    event.target.playVideo();
+                  }
+                  var done = false;
+                  function onPlayerStateChange(event) {
+                    if (event.data == YT.PlayerState.PLAYING && !done) {
+                      if (event.data == YT.PlayerState.ENDED) {
+                        player.seekTo(0);
+                        player.playVideo();
+                      }
+                    }
+                  }
+                </script>
+                </div>';
 
         return $this->render('home/next.html.twig', [
             'video' => $video,
             'embedCode' => $embedCode,
+            'script1' => $script1,
         ]);
     }
 }
