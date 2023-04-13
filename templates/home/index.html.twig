@@ -7,8 +7,8 @@
 	<form method="get" action="{{ path('home') }}" class="mb-4 search">
 		<div class="flex justify-center items-center">
 			<input id="search-input" type="text" name="keyword" class="form-input py-2 px-4 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 block w-3/2 sm:text-sm border-gray-300 rounded-md" placeholder="Search..." value="{{ keyword }}"/>
-			<select name="limit" class="ml-4 form-select py-2 px-4 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md">
-				{% for i in 1..50 %}
+			<select name="limit" class="ml-4 form-select py-2 px-4 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md" onchange="this.form.submit()">
+				{% for i in 1..videos|length %}
 					<option value="{{ i }}" {{ limit == i ? 'selected' : '' }}>{{ i }}
 						per page</option>
 				{% endfor %}
