@@ -6,41 +6,64 @@
 {% block body %}
 	<form method="get" action="{{ path('home') }}" class="mb-4 search">
 		<div class="flex justify-center items-center">
-      <input id="search-input" type="text" name="keyword" class="form-input py-2 px-4 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 block w-3/2 sm:text-sm border-gray-300 rounded-md" placeholder="Search..." value="{{ keyword }}"/>
-      <select name="limit" class="ml-4 form-select py-2 px-4 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md">
-        <option value="5" {{ limit == 5 ? 'selected' : '' }}>5 per page</option>
-        <option value="10" {{ limit == 10 ? 'selected' : '' }}>10 per page</option>
-        <option value="20" {{ limit == 20 ? 'selected' : '' }}>20 per page</option>
-      </select>
-      <button type="submit" class="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Apply</button>
-    </div>
+			<input id="search-input" type="text" name="keyword" class="form-input py-2 px-4 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 block w-3/2 sm:text-sm border-gray-300 rounded-md" placeholder="Search..." value="{{ keyword }}"/>
+			<select name="limit" class="ml-4 form-select py-2 px-4 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md">
+				{% for i in 1..50 %}
+					<option value="{{ i }}" {{ limit == i ? 'selected' : '' }}>{{ i }}
+						per page</option>
+				{% endfor %}
+			</select>
+			<button type="submit" class="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Apply</button>
+		</div>
 	</form>
 
 	{% if noResults %}
 		<p>No results found: "{{keyword}}"</p>
 
 	{% else %}
-		{% for video in videos %}
-		{% if loop.index <= limit %}
-			<div class="video">
-				<label>
-					<input type="radio" name="selectedVideo" value="{{ video.videoId }}" />
-					<img src="{{ video.thumbnail }}" alt="{{ video.title }}"/>
-					<h6>{{ video.title }}</h6>
-					<p>Published Date: {{ video.publishedAt|date('Y-m-d') }}</p>
-					<p>ID: {{ video.videoId }}</p>
-					<p>Duration: {{video.duration}}</p>
-				</label>
-			</div>
+		{% set totalPages = (videos|length / limit)|round(0, 'ceil') %}
+		{% set currentPage = app.request.query.get('page', 1) %}
+		{% set start = (currentPage - 1) * limit %}
+		{% set end = start + limit %}
+		{% for video in videos|slice(start, end) %}
+			{% if loop.index <= limit %}
+				<div class="video">
+					<label>
+						<input type="radio" name="selectedVideo" value="{{ video.videoId }}"/>
+						<img src="{{ video.thumbnail }}" alt="{{ video.title }}"/>
+						<h6>{{ video.title }}</h6>
+						<p>Published Date:
+							{{ video.publishedAt|date('Y-m-d') }}</p>
+						<p>ID:
+							{{ video.videoId }}</p>
+						<p>Duration:
+							{{video.duration}}</p>
+					</label>
+				</div>
+			{% endif %}
+		{% endfor %}
+		<div class="pagination">
+			{% if currentPage > 1 %}
+				<a href="{{ path('home', {'limit': limit, 'page': currentPage - 1}) }}">Prev</a>
+			{% endif %}
+			{% for page in 1..totalPages %}
+				{% if page == currentPage %}
+					<span class="current">{{ page }}</span>
+				{% else %}
+					<a href="{{ path('home', {'limit': limit, 'page': page}) }}">{{ page }}</a>
+				{% endif %}
+			{% endfor %}
+			{% if currentPage < totalPages %}
+				<a href="{{ path('home', {'limit': limit, 'page': currentPage + 1}) }}">Nxt</a>
+			{% endif %}
+		</div>
+		<button id="next-btn">Next</button>
+		<script>
+			const nextBtn = document.getElementById('next-btn');
+nextBtn.addEventListener('click', () => {
+const selectedVideoId = document.querySelector('input[name="selectedVideo"]:checked').value;
+window.location.href = "{{ path('video_detail', {'videoId': 'VIDEO_ID'}) }}".replace('VIDEO_ID', selectedVideoId);
+});
+		</script>
 	{% endif %}
-	{% endfor %}
-	<button id="next-btn">Next</button>
-    <script>
-      const nextBtn = document.getElementById('next-btn');
-      nextBtn.addEventListener('click', () => {
-        const selectedVideoId = document.querySelector('input[name="selectedVideo"]:checked').value;
-        window.location.href = "{{ path('video_detail', {'videoId': 'VIDEO_ID'}) }}".replace('VIDEO_ID', selectedVideoId);
-      });
-    </script>
-  {% endif %}
 {% endblock %}
