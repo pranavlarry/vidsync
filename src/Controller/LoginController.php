@@ -53,7 +53,8 @@ class LoginController extends AbstractController
      */
     public function loginCallback(Request $request)
     {
-        $client = new Client();
+        // Exchange the authorization code for an access token
+        $client = new Google_Client();
         $client->setClientId('364147634847-fo6idfvun9fp6usn9i2op76cnpnnm0o5.apps.googleusercontent.com');
         $client->setClientSecret('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');
         $client->setRedirectUri($this->generateUrl('login_callback', [], UrlGeneratorInterface::ABSOLUTE_URL));
