@@ -110,7 +110,7 @@ class HomeController extends AbstractController
         ];
 
         $embedCode = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' . $video['videoId'] . '" frameborder="0" allowfullscreen></iframe>';
-        $script1 = '<div
+        $script1 = '
                 <div id="player"></div>
             
                 <script>
@@ -153,8 +153,7 @@ class HomeController extends AbstractController
                       }
                     }
                   }
-                </script>
-                </div>';
+                </script>';
 
         return $this->render('home/next.html.twig', [
             'video' => $video,
