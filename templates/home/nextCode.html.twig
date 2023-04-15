@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ video.title }}
+{% endblock %}
+
+{% block body %}
+	<h1>{{ video.title }}</h1>
+	<div class="video-player">
+		<iframe src="https://www.youtube.com/embed/{{ video.videoId }}" frameborder="0" allowfullscreen></iframe>
+	</div>
+    <div class="video-player">
+        {{ embedCode }}
+        <br>
+        <br>
+        {{ script1 }}
+    </div>
+{% endblock %}

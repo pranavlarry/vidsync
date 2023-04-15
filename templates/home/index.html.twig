@@ -59,14 +59,15 @@
 		<button id="next-btn">Next</button>
 		<script>
 			const nextBtn = document.getElementById('next-btn');
-			nextBtn.addEventListener('click', () => {
-			const selectedVideoId = document.querySelector('input[name="selectedVideo"]:checked').value;
-			window.location.href = "{{ path('video_detail', {'videoId': 'VIDEO_ID'}) }}".replace('VIDEO_ID', selectedVideoId);
-			});
+nextBtn.addEventListener('click', () => {
+const selectedVideoId = document.querySelector('input[name="selectedVideo"]:checked').value;
+window.location.href = "{{ path('video_detail', {'videoId': 'VIDEO_ID'}) }}".replace('VIDEO_ID', selectedVideoId);
+});
 
-			document.getElementById('limit-select').addEventListener('change', function() {
-				this.form.submit();
-			});
+document.getElementById('limit-select').addEventListener('change', function () {
+this.form.submit();
+});
 		</script>
 	{% endif %}
 {% endblock %}
+

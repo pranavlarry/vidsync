@@ -53,7 +53,7 @@ class LoginController extends AbstractController
      */
     public function loginCallback(Request $request)
     {
-        // Exchange the authorization code for an access token
+        // Initialize the Google client with the app credentials and the redirect URI
         $client = new Google_Client();
         $client->setClientId('364147634847-fo6idfvun9fp6usn9i2op76cnpnnm0o5.apps.googleusercontent.com');
         $client->setClientSecret('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');
@@ -80,11 +80,25 @@ class LoginController extends AbstractController
             }
         }
 
-       
+        // Check if the access token has expired
+        $accessToken = $session->get('access_token');
+        if ($accessToken && isset($accessToken['expires_in']) && $accessToken['expires_in'] < time() + 1800) {
+            // Access token has expired, use the refresh token to obtain a new access token
+            $refreshToken = $session->get('refresh_token');
+            if ($refreshToken) {
+                $client->setAccessType('offline');
+                $client->setAccessToken(['refresh_token' => $refreshToken]);
+                $client->fetchAccessTokenWithRefreshToken();
+                $accessToken = $client->getAccessToken();
+                $session->set('access_token', $accessToken);
+                return $this->redirectToRoute('home');
+            }
+        }
+
+        // Authorization code flow
         $code = $request->query->get('code');
         $accessToken = $client->fetchAccessTokenWithAuthCode($code);
 
-        
         if (isset($accessToken['refresh_token'])) {
             $session->set('refresh_token', $accessToken['refresh_token']);
         }

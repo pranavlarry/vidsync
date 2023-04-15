@@ -9,10 +9,18 @@
 	<div class="video-player">
 		<iframe src="https://www.youtube.com/embed/{{ video.videoId }}" frameborder="0" allowfullscreen></iframe>
 	</div>
-	<div class="video-player">
-		{{ embedCode }}
-		<br>
-		<br>
-		{{ script1 }}
-	</div>
+
+<form action="{{ path('video_code', {'videoId': video.videoId}) }}" method="post">
+<label for="checkbox1">Autoplay:</label>
+<input type="checkbox" id="checkbox1" name="autoplay" value="0" onclick="this.value=1;"><br>
+<label for="checkbox2">Loop video:</label>
+<input type="checkbox" id="checkbox2" name="loop" value="0" onclick="this.value=1;"><br>
+<label for="checkbox3">Disable Keyboard Controls:</label>
+<input type="checkbox" id="checkbox3" name="disablekb" value="0" onclick="this.value=1;"><br>
+    <label for="textbox1">Width of video:</label>
+<input type="text" id="textbox1" name="textbox1"><br>
+    <label for="textbox2">Height of video:</label>
+<input type="text" id="textbox2" name="textbox2">
+    <button type="submit">Next</button>
+</form>
 {% endblock %}

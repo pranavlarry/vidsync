@@ -25,3 +25,7 @@ video_detail:
     path: '/videos/{videoId}'
     controller: App\Controller\HomeController::videoDetail
 
+video_code:
+    path: '/code/{videoId}'
+    controller: App\Controller\HomeController::videoCode
+
