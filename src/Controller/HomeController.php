@@ -21,17 +21,8 @@ class HomeController extends AbstractController
         }
 
         $client = new Google_Client();
-        $client->setAccessType('offline');
-        $client->setApprovalPrompt('consent');
         $client->setAccessToken($access_token);
-        $client->setAccessToken($session->get('access_token'));
-        if ($client->isAccessTokenExpired()) {
-            $refreshToken = $client->getRefreshToken();
-            $client->setAccessToken($refreshToken);
-            $client->fetchAccessTokenWithRefreshToken();
-            $session->set('access_token', $client->getAccessToken());
-        }
-
+    
         $youtube = new Google_Service_YouTube($client);
 
         $channelsResponse = $youtube->channels->listChannels('id,contentDetails', [
@@ -102,18 +93,12 @@ class HomeController extends AbstractController
 
         $session = $request->getSession();
         $access_token = $session->get('access_token');
-
-        $client = new Google_Client();
-        $client->setAccessType('offline');
-        $client->setApprovalPrompt('consent');
-        $client->setAccessToken($access_token);
-        $client->setAccessToken($session->get('access_token'));
-        if ($client->isAccessTokenExpired()) {
-            $refreshToken = $client->getRefreshToken();
-            $client->setAccessToken($refreshToken);
-            $client->fetchAccessTokenWithRefreshToken();
-            $session->set('access_token', $client->getAccessToken());
+        if (!$access_token) {
+            return $this->redirectToRoute('login');
         }
+        $client = new Google_Client();
+        $client->setAccessToken($access_token);
+        
 
         $youtube = new Google_Service_YouTube($client);
 
@@ -137,18 +122,12 @@ class HomeController extends AbstractController
 
         $session = $request->getSession();
         $access_token = $session->get('access_token');
-
-        $client = new Google_Client();
-        $client->setAccessType('offline');
-        $client->setApprovalPrompt('consent');
-        $client->setAccessToken($access_token);
-        $client->setAccessToken($session->get('access_token'));
-        if ($client->isAccessTokenExpired()) {
-            $refreshToken = $client->getRefreshToken();
-            $client->setAccessToken($refreshToken);
-            $client->fetchAccessTokenWithRefreshToken();
-            $session->set('access_token', $client->getAccessToken());
+        if (!$access_token) {
+            return $this->redirectToRoute('login');
         }
+        $client = new Google_Client();
+        
+        $client->setAccessToken($access_token);
 
         $youtube = new Google_Service_YouTube($client);
         $videosResponse = $youtube->videos->listVideos('snippet', [
