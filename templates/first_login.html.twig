@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<body>
+  <div class="container">
+    <div class="login-form">
+    <button>
+        <a href="{{ path('login_with_google') }}" class="btn btn-primary">
+        Login with Google
+        </a>
+    </button>
+
+    </div>
+  </div>
+</body>
+{% endblock %}

@@ -3,3 +3,29 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+login:
+  path: /login
+  controller: App\Controller\LoginController::login
+
+login_callback:
+  path: /login/google/callback
+  controller: App\Controller\LoginController::loginCallback
+
+login_with_google:
+  path: /login/google
+  controller: App\Controller\LoginController::loginWithGoogle
+
+home:
+  path: /home
+  controller: App\Controller\HomeController::index
+  methods: GET
+
+video_detail:
+    path: '/videos/{videoId}'
+    controller: App\Controller\HomeController::videoDetail
+
+video_code:
+    path: '/code/{videoId}'
+    controller: App\Controller\HomeController::videoCode
+

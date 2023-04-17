@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "101675cc1a1dd26c6e9105057b8cf512",
+    "content-hash": "1a68f2b6e4871ed4ca6c2906d2a74184",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -6489,16 +6489,16 @@
         },
         {
             "name": "symfony/runtime",
-            "version": "v6.2.7",
+            "version": "v6.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/runtime.git",
-                "reference": "111b9d617d0cfc71d44baf01eb9951517fd8b739"
+                "reference": "f8b0751b33888329be8f8f0481bb81d279ec4157"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/runtime/zipball/111b9d617d0cfc71d44baf01eb9951517fd8b739",
-                "reference": "111b9d617d0cfc71d44baf01eb9951517fd8b739",
+                "url": "https://api.github.com/repos/symfony/runtime/zipball/f8b0751b33888329be8f8f0481bb81d279ec4157",
+                "reference": "f8b0751b33888329be8f8f0481bb81d279ec4157",
                 "shasum": ""
             },
             "require": {
@@ -6544,8 +6544,11 @@
             ],
             "description": "Enables decoupling PHP applications from global state",
             "homepage": "https://symfony.com",
+            "keywords": [
+                "runtime"
+            ],
             "support": {
-                "source": "https://github.com/symfony/runtime/tree/v6.2.7"
+                "source": "https://github.com/symfony/runtime/tree/v6.2.8"
             },
             "funding": [
                 {
@@ -6561,20 +6564,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-02-02T07:44:01+00:00"
+            "time": "2023-03-14T15:48:35+00:00"
         },
         {
             "name": "symfony/security-bundle",
-            "version": "v6.2.7",
+            "version": "v6.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/security-bundle.git",
-                "reference": "601bcc14b6e8c168dc5985d31cfdfd11bd07b50b"
+                "reference": "c781ba5ab5f71a5c8bd5fce5b4c8b6ad9eb7f3d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/security-bundle/zipball/601bcc14b6e8c168dc5985d31cfdfd11bd07b50b",
-                "reference": "601bcc14b6e8c168dc5985d31cfdfd11bd07b50b",
+                "url": "https://api.github.com/repos/symfony/security-bundle/zipball/c781ba5ab5f71a5c8bd5fce5b4c8b6ad9eb7f3d5",
+                "reference": "c781ba5ab5f71a5c8bd5fce5b4c8b6ad9eb7f3d5",
                 "shasum": ""
             },
             "require": {
@@ -6645,7 +6648,7 @@
             "description": "Provides a tight integration of the Security component into the Symfony full-stack framework",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/security-bundle/tree/v6.2.7"
+                "source": "https://github.com/symfony/security-bundle/tree/v6.2.8"
             },
             "funding": [
                 {
@@ -6661,7 +6664,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-02-21T12:32:47+00:00"
+            "time": "2023-03-10T10:06:03+00:00"
         },
         {
             "name": "symfony/security-core",
